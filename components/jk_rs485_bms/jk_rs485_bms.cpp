@@ -1601,7 +1601,12 @@ void JkRS485Bms::publish_state_(JkRS485BmsSwitch *obj, const bool &state) {
     return;
   }
 
-  const size_t free_heap = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+  // On ESP32 we can query the largest free block; on RP2040 we just stub it out
+  #if defined(ARDUINO_ARCH_ESP32)
+    const size_t free_heap = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+  #else
+    const size_t free_heap = 0;
+  #endif
 
   if (reinterpret_cast<uintptr_t>(obj) > 0x3f000000) {
     ESP_LOGV(TAG, "       ]* Publishing state %d for object with address %p [%f] %s", state, (void*)obj, ((float)free_heap/1024), obj->get_name().c_str());
@@ -1618,7 +1623,12 @@ void JkRS485Bms::publish_state_(JkRS485BmsNumber *number, float value) {
     return;
   }
 
-  const size_t free_heap = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+  // On ESP32 we can query the largest free block; on RP2040 we just stub it out
+  #if defined(ARDUINO_ARCH_ESP32)
+    const size_t free_heap = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+  #else
+    const size_t free_heap = 0;
+  #endif
 
   if (reinterpret_cast<uintptr_t>(number) > 0x3f000000) {
     ESP_LOGV(TAG, "       ]* Publishing state %f for object with address %p [%f] %s", value, (void*)number, ((float)free_heap/1024), number->get_name().c_str());
